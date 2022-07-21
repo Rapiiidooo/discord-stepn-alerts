@@ -56,6 +56,20 @@ mapping_response_attrs = {
 class StepnRequest(object):
 
     @classmethod
+    def get_code_login(cls, email: str):
+        url = cls.creates_url_params(endpoint='sendlogincode', account=email)
+
+        response = requests.get(url)
+        return response.json()
+
+    @classmethod
+    def get_login(cls, email: str, password):
+        url = cls.creates_url_params(endpoint='login', account=email, password=password, type=4)
+
+        response = requests.get(url)
+        return response.json()
+
+    @classmethod
     def get_orderlist(cls, **kwargs) -> dict:
         """
         params_example = {

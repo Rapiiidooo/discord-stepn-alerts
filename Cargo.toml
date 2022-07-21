@@ -1,0 +1,14 @@
+[package]
+# Fork of https://github.com/Numenorean/stepn-password
+name = "stepn-password"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "stepn_password"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.16.5", features = ["extension-module"] }
+sha2 = "0.10.2"
+hex = "0.4.3"
