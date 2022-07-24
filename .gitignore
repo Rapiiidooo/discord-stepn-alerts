@@ -137,3 +137,5 @@ secrets.py
 
 /target
 /Cargo.lock
+
+cookies

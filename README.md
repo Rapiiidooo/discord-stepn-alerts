@@ -14,3 +14,9 @@ is a fork of https://github.com/Numenorean/stepn-password
 
 - Rust
 - Python >=3.10
+
+# Public
+
+Invite the ready to use bot:
+
+https://discord.com/api/oauth2/authorize?client_id=1000748328490893422&permissions=154890923024&scope=bot

@@ -1,28 +1,30 @@
 import discord
 
-client = discord.Client()
 
+class StepnClient(discord.Client):
 
-@client.event
-async def on_ready(messages_dict: dict):
-    g_roles: dict = {}
+    def __init__(self, messages_dict):
+        super(StepnClient, self).__init__()
+        self.messages_dict = messages_dict
 
-    for guild in client.guilds:
-        for role in guild.roles:
-            g_roles[role.name] = role
+    async def on_ready(self):
+        print('We have logged in as {0.user}'.format(self))
 
-        for channel in guild.channels:
-            if channel.name == 'stepn-marketplace':
-                messages = messages_dict["messages"]
+        g_roles: dict = {}
 
-                if messages_dict.get('mention'):
-                    final_message = f"{g_roles[messages_dict.get('mention')].mention}\n"
-                else:
-                    final_message = ''
+        for guild in self.guilds:
+            for role in guild.roles:
+                g_roles[role.name] = role
 
-                for message, image in messages:
-                    final_message = f"{final_message}{message}{image}"
+            for channel in guild.channels:
+                if channel.name == 'stepn-marketplace':
+                    messages = self.messages_dict["messages"]
 
-                await channel.send(final_message)
+                    if self.messages_dict.get('mention'):
+                        mention = f"{g_roles[self.messages_dict.get('mention')].mention}\n"
+                        await channel.send(mention)
 
-    await client.close()
+                    for message, image in messages:
+                        embed = discord.Embed()
+                        embed.set_image(url=image)
+                        await channel.send(message, embed=embed)
