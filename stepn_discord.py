@@ -1,4 +1,10 @@
+import asyncio
+import platform
+
 import discord
+
+if platform.system() == 'Windows':
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 
 class StepnClient(discord.Client):
@@ -8,7 +14,7 @@ class StepnClient(discord.Client):
         self.messages_dict = messages_dict
 
     async def on_ready(self):
-        print('We have logged in as {0.user}'.format(self))
+        print('Logged in as {0.user}'.format(self))
 
         g_roles: dict = {}
 
@@ -20,11 +26,14 @@ class StepnClient(discord.Client):
                 if channel.name == 'stepn-marketplace':
                     messages = self.messages_dict["messages"]
 
-                    if self.messages_dict.get('mention'):
-                        mention = f"{g_roles[self.messages_dict.get('mention')].mention}\n"
-                        await channel.send(mention)
+                    if messages:
+                        if self.messages_dict.get('mention'):
+                            mention = f"{g_roles[self.messages_dict.get('mention')].mention}\n"
+                            await channel.send(mention)
 
-                    for message, image in messages:
-                        embed = discord.Embed()
-                        embed.set_image(url=image)
-                        await channel.send(message, embed=embed)
+                        for message, image in messages:
+                            embed = discord.Embed()
+                            embed.set_image(url=image)
+                            await channel.send(message, embed=embed)
+
+        await self.close()

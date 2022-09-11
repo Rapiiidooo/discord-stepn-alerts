@@ -15,6 +15,49 @@ is a fork of https://github.com/Numenorean/stepn-password
 - Rust
 - Python >=3.10
 
+# secret.py example
+
+```
+ID = "1000000000000000000"
+TOKEN = "..."
+PUBLIC = "..."
+
+STEPN_ACCOUNT = "user@mail.com"
+STEPN_PASSWORD = "password"
+
+RULES = [
+    {
+        "title": "Any shoes under 2 sol",
+        "conditions": f"%sellPrice < 2000000",
+        "params": {
+            "order": mapping_order["lowest_price"],
+            "chain": mapping_chain["sol"],
+            "refresh": "true",
+            "page": 0,
+            "type": mapping_type["sneakers_all"],
+        },
+        "page_end": 0,
+        "limit": 2,
+    },
+
+    Check min luck = 10
+    {
+        "title": "Shoes with at least luck > 10 !",
+        "conditions": f"%sellPrice < 1500000",
+        "conditions_on_stats": f"%attr.Luck > 100",
+        "params": {
+            "order": mapping_order["lowest_price"],
+            "chain": mapping_chain["sol"],
+            "refresh": "true",
+            "page": 0,
+            "type": mapping_type["sneakers_all"],
+        },
+        "page_end": 0,
+        "limit": 3,
+    },
+]
+```
+
 # Public
 
 Invite the ready to use bot:
