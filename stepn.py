@@ -158,16 +158,9 @@ class StepnRequest(object):
         try:
             with open('cookies', 'rb') as f:
                 self.session.cookies.update(pickle.load(f))
+                self.sessionID = self.session.cookies.get('sessionID')
         except FileNotFoundError:
             return
-
-    # @http_stepn_watcher
-    # def get_code_login(self, email: str) -> Response:
-    #     url = self.creates_url_params(endpoint='sendlogincode', account=email)
-    #
-    #     response = self.requests.get(url)
-    #
-    #     return response
 
     @http_stepn_watcher
     def get_login(self, ):
@@ -196,6 +189,8 @@ class StepnRequest(object):
             sessionID=self.sessionID
         )
         response = self.session.get(url)
+
+        self.session.cookies.set("sessionID", self.sessionID)
 
         with open('cookies', 'wb') as f:
             pickle.dump(self.session.cookies, f)

@@ -23,6 +23,8 @@ messages_dict = {
 
 
 def main():
+    stop = False
+
     stepn = StepnRequest(email=STEPN_ACCOUNT, password=STEPN_PASSWORD, google_2auth_secret=GOOGLE_2AUTH)
     for item in rules_to_check:
         title = item.get("title") + ' - ' if item.get("title") else ''
@@ -74,7 +76,7 @@ def main():
                         with open("log.txt", "a") as log_file:
                             log_file.write(message)
 
-                        break
+                        stop = True
 
                 if conditions_on_stats := item.get("conditions_on_stats"):
                     try:
@@ -109,12 +111,13 @@ def main():
                     messages_dict["messages"].append((message, image))
 
                 # This is for the details limit
-                if nb_matched >= limit:
+                if nb_matched >= limit or stop:
                     page = item["page_end"] + 1
                     break
 
-    client = StepnClient(messages_dict=messages_dict)
-    client.run(TOKEN)
+    if messages_dict["messages"]:
+        client = StepnClient(messages_dict=messages_dict)
+        client.run(TOKEN)
 
 
 if __name__ == '__main__':
