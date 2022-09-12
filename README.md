@@ -9,10 +9,10 @@ is a fork of https://github.com/Numenorean/stepn-password
 # Build the lib
 
 ```
-pip install virtualenv
+pip3 install virtualenv
 virtualenv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 
 maturin develop
 ```

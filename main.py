@@ -54,18 +54,22 @@ def main():
                 conditions = item.get("conditions")
                 conditions = stepn.replace_binded_vars(conditions=conditions, row=row)
 
+                sell_price = row.get('sellPrice') / 1000000
                 if eval(conditions):
-                    image = f"{url_pics}/{row.get('img')}"
-                    message += f"{url_front}/order/{row.get('id')}\n" + \
-                               f"{title}" + \
-                               f"{row.get('sellPrice') / 1000000} {mapping_chain_reversed[item.get('params').get('chain')]} - " + \
-                               f"lvl {row.get('level')} - " + \
-                               f"{mapping_quality_reversed[row.get('quality')]} - " + \
-                               f"{row.get('mint')} mint"
-
                     evo = safe_evolution(row.get('sellPrice'), price, default=0)
+
                     if evo and threshold and abs(evo) > threshold:
-                        message += f"Price is {evo}% different than the rule watcher. New price limit set to {row.get('sellPrice') / 1000000}."
+                        # THIS PART BEFORE IF - IF YOU WANT TO DISABLE EVO CONSTRAINT
+                        image = f"{url_pics}/{row.get('img')}"
+                        message += f"{url_front}/order/{row.get('id')}\n" + \
+                                   f"{title}" + \
+                                   f"{sell_price} {mapping_chain_reversed[item.get('params').get('chain')]} - " + \
+                                   f"lvl {row.get('level')} - " + \
+                                   f"{mapping_quality_reversed[row.get('quality')]} - " + \
+                                   f"{row.get('mint')} mint"
+                        # END OF PART
+
+                        message += f"Price is {evo}% different than the rule watcher. New price limit set to {sell_price}."
                         with open(secrets.RATIO_FILENAME, 'w') as f:
                             new_price = {
                                 "price": row.get('sellPrice'),
