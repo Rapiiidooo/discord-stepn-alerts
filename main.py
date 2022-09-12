@@ -65,7 +65,7 @@ def main():
 
                     evo = safe_evolution(row.get('sellPrice'), price, default=0)
                     if evo and threshold and abs(evo) > threshold:
-                        message += f"Price is {evo}% different than the rule watcher. New price limit set to {row.get('sellPrice')}."
+                        message += f"Price is {evo}% different than the rule watcher. New price limit set to {row.get('sellPrice') / 1000000}."
                         with open(secrets.RATIO_FILENAME, 'w') as f:
                             new_price = {
                                 "price": row.get('sellPrice'),
