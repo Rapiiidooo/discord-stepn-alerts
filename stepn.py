@@ -330,6 +330,6 @@ class StepnRequest(object):
     @staticmethod
     def human_readable_stats(title: str, chain: str, details: dict):
         url = f"{url_front}/order/{details.get('id')}"
-        message = f"{title} => with the following: {details.get('sellPrice')} {chain} - lvl {details.get('level')} - " \
+        message = f"{title} => details: {details.get('sellPrice')} {chain} - lvl {details.get('level')} - " \
                   f"{mapping_quality_reversed[details.get('quality')]} - {details.get('mint')} mint"
         return f"{message}\nLink: {url}\n"

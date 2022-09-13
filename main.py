@@ -5,9 +5,9 @@ from stepn import StepnRequest, url_pics, mapping_chain_reversed, StepnNotFound,
     safe_evolution, safe_add_percent, safe_minus_percent
 from stepn_discord import StepnClient
 
-ID = secrets.ID
-TOKEN = secrets.TOKEN
-PUBLIC = secrets.PUBLIC
+ID = secrets.DISCORD_BOT_ID
+TOKEN = secrets.DISCORD_BOT_TOKEN
+PUBLIC = secrets.DISCORD_BOT_PUBLIC
 
 STEPN_ACCOUNT = secrets.STEPN_ACCOUNT
 STEPN_PASSWORD = secrets.STEPN_PASSWORD
@@ -62,18 +62,19 @@ def main():
                 if eval(conditions):
                     price_evolution = safe_evolution(row.get('sellPrice'), price, default=0)
 
-                    if price_evolution and threshold and abs(price_evolution) > threshold:
+                    if (price_evolution and threshold and abs(price_evolution) > threshold) or not price:
                         image = f"{url_pics}/{row.get('img')}" if image_enabled else None
                         message = stepn.human_readable_stats(title=title, chain=chain, details=row)
 
-                        message += f"\n{price_evolution}% from previous price, new price limit: "
-                        message += f"{sell_price} {chain} (+/- {threshold}%) ({safe_add_percent(sell_price, threshold)}/{safe_minus_percent(sell_price, threshold)} {chain})"
-                        with open(secrets.RATIO_FILENAME, 'w') as f:
-                            new_price = {
-                                "price": row.get('sellPrice'),
-                                "threshold": threshold,
-                            }
-                            json.dump(new_price, f, indent=4)
+                        if price:
+                            message += f"\n{price_evolution}% from previous price, new price limit: "
+                            message += f"{sell_price} {chain} (+/- {threshold}%) ({safe_add_percent(sell_price, threshold)}/{safe_minus_percent(sell_price, threshold)} {chain})"
+                            with open(secrets.RATIO_FILENAME, 'w') as f:
+                                new_price = {
+                                    "price": row.get('sellPrice'),
+                                    "threshold": threshold,
+                                }
+                                json.dump(new_price, f, indent=4)
 
                         with open("log.txt", "a") as log_file:
                             log_file.write(message)

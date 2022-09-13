@@ -3,6 +3,8 @@ import platform
 
 import discord
 
+import secrets
+
 if platform.system() == 'Windows':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
@@ -26,6 +28,9 @@ class StepnClient(discord.Client):
 
             for channel in guild.channels:
                 g_channels[channel.name] = channel
+
+            if secrets.DEBUG and str(guild) != secrets.DISCORD_NAME:
+                continue
 
             if 'stepn-marketplace' in g_channels:
                 channel = g_channels['stepn-marketplace']
