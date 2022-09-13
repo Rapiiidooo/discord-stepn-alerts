@@ -16,24 +16,32 @@ class StepnClient(discord.Client):
     async def on_ready(self):
         print('Logged in as {0.user}'.format(self))
 
-        g_roles: dict = {}
-
         for guild in self.guilds:
+
+            g_roles: dict = {}
+            g_channels: dict = {}
+
             for role in guild.roles:
                 g_roles[role.name] = role
 
             for channel in guild.channels:
-                if channel.name == 'stepn-marketplace':
-                    messages = self.messages_dict["messages"]
+                g_channels[channel.name] = channel
 
-                    if messages:
-                        if self.messages_dict.get('mention'):
-                            mention = f"{g_roles[self.messages_dict.get('mention')].mention}\n"
-                            await channel.send(mention)
+            if 'stepn-marketplace' in g_channels:
+                channel = g_channels['stepn-marketplace']
+                messages = self.messages_dict["messages"]
 
-                        for message, image in messages:
+                mention = None
+                if messages:
+                    if self.messages_dict.get('mention'):
+                        mention = f"{g_roles[self.messages_dict.get('mention')].mention}\n"
+
+                    for message, image in messages:
+                        if image:
                             embed = discord.Embed()
                             embed.set_image(url=image)
-                            await channel.send(message, embed=embed)
+                            await channel.send(f"{mention}{message}", embed=embed)
+                        else:
+                            await channel.send(f"{mention}{message}")
 
         await self.close()

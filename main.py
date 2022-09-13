@@ -1,8 +1,8 @@
 import json
 
 import secrets
-from stepn import StepnRequest, url_pics, mapping_quality_reversed, mapping_chain_reversed, StepnNotFound, \
-    safe_evolution, url_front
+from stepn import StepnRequest, url_pics, mapping_chain_reversed, StepnNotFound, \
+    safe_evolution, safe_add_percent, safe_minus_percent
 from stepn_discord import StepnClient
 
 ID = secrets.ID
@@ -27,11 +27,13 @@ def main():
 
     stepn = StepnRequest(email=STEPN_ACCOUNT, password=STEPN_PASSWORD, google_2auth_secret=GOOGLE_2AUTH)
     for item in rules_to_check:
-        title = item.get("title") + ' - ' if item.get("title") else ''
+        title = item.get("title") if item.get("title") else ''
         page = item.get("params").get("page")
         limit = item.get("limit", 1000)
-        price = item.get("ratio_price")
-        threshold = item.get("ratio_threshold")
+        price = item.get("price")
+        threshold = item.get("threshold")
+        chain = mapping_chain_reversed[item.get('params').get('chain')]
+        image_enabled = item.get("image_enabled")
 
         nb_matched = 0
         while page <= item["page_end"]:
@@ -46,30 +48,26 @@ def main():
             if limit and "conditions_on_stats" not in item:
                 rows = rows[:limit]
 
-            # For every shoes in dict
+            # For every shoe's in dict
             for row in rows:
                 message = ''
                 image = ''
 
+                row = stepn.reduce_item(details=row)
+
                 conditions = item.get("conditions")
                 conditions = stepn.replace_binded_vars(conditions=conditions, row=row)
 
-                sell_price = row.get('sellPrice') / 1000000
+                sell_price = row.get('sellPrice')
                 if eval(conditions):
-                    evo = safe_evolution(row.get('sellPrice'), price, default=0)
+                    price_evolution = safe_evolution(row.get('sellPrice'), price, default=0)
 
-                    if evo and threshold and abs(evo) > threshold:
-                        # THIS PART BEFORE IF - IF YOU WANT TO DISABLE EVO CONSTRAINT
-                        image = f"{url_pics}/{row.get('img')}"
-                        message += f"{url_front}/order/{row.get('id')}\n" + \
-                                   f"{title}" + \
-                                   f"{sell_price} {mapping_chain_reversed[item.get('params').get('chain')]} - " + \
-                                   f"lvl {row.get('level')} - " + \
-                                   f"{mapping_quality_reversed[row.get('quality')]} - " + \
-                                   f"{row.get('mint')} mint"
-                        # END OF PART
+                    if price_evolution and threshold and abs(price_evolution) > threshold:
+                        image = f"{url_pics}/{row.get('img')}" if image_enabled else None
+                        message = stepn.human_readable_stats(title=title, chain=chain, details=row)
 
-                        message += f"Price is {evo}% different than the rule watcher. New price limit set to {sell_price}."
+                        message += f"\n{price_evolution}% from previous price, new price limit: "
+                        message += f"{sell_price} {chain} (+/- {threshold}%) ({safe_add_percent(sell_price, threshold)}/{safe_minus_percent(sell_price, threshold)} {chain})"
                         with open(secrets.RATIO_FILENAME, 'w') as f:
                             new_price = {
                                 "price": row.get('sellPrice'),
@@ -111,7 +109,8 @@ def main():
                         message = None
                         image = None
 
-                if message and image:
+                if message and (image or not image_enabled):
+                    print(message)
                     messages_dict["messages"].append((message, image))
 
                 # This is for the details limit

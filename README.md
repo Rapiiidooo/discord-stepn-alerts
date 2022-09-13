@@ -67,6 +67,16 @@ RULES = [
 
 # Public
 
-Invite the ready to use bot:
+For the ready to use bot:
+
+Create the following role : `stepnwatcher`
+Create the following channel: `stepn-marketplace`
+
+Invite the bot with minimum of write rights and roles usage:
 
 https://discord.com/api/oauth2/authorize?client_id=1000748328490893422&permissions=154890923024&scope=bot
+
+If I have the time I'll create the dashboard to customize your alerts. But for now, you'll just receive the same as
+mine.
+
+Every price changing more than `"threshold": 15`%

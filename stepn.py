@@ -73,6 +73,29 @@ def safe_evolution(a, b, default="N/A"):
         return default
 
 
+def safe_percent(a, b, default="N/A"):
+    try:
+        return round(a * b / 100, 2)
+    except Exception:
+        return default
+
+
+def safe_add_percent(a, b, default="N/A"):
+    try:
+        to_add = safe_percent(a, b, default)
+        return round(a + to_add, 2)
+    except Exception:
+        return default
+
+
+def safe_minus_percent(a, b, default="N/A"):
+    try:
+        to_dim = safe_percent(a, b, default)
+        return round(a - to_dim, 2)
+    except Exception:
+        return default
+
+
 class StepnNotFound(Exception):
     """ Raised when 'Order does not exist'"""
 
@@ -180,7 +203,7 @@ class StepnRequest(object):
 
         try:
             self.sessionID = response.json()["data"]['sessionID']
-        except:
+        except Exception:
             pass
 
         url = self.creates_url_params(
@@ -297,3 +320,16 @@ class StepnRequest(object):
             conditions = conditions.replace(f"%{var_to_replace}", str(real_value))
 
         return conditions
+
+    @staticmethod
+    def reduce_item(details: dict):
+        if 'sellPrice' in details:
+            details['sellPrice'] = int(details['sellPrice']) / 1000000
+        return details
+
+    @staticmethod
+    def human_readable_stats(title: str, chain: str, details: dict):
+        url = f"{url_front}/order/{details.get('id')}"
+        message = f"{title} => with the following: {details.get('sellPrice')} {chain} - lvl {details.get('level')} - " \
+                  f"{mapping_quality_reversed[details.get('quality')]} - {details.get('mint')} mint"
+        return f"{message}\nLink: {url}\n"
