@@ -1,5 +1,6 @@
 import pickle
 import time
+from datetime import datetime
 from functools import wraps
 
 import pyotp
@@ -281,10 +282,11 @@ class StepnRequest(object):
 
             url = f"{url}{key}={value}"
 
+        logs = f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {url}\n"
         with open("log.txt", "a") as log_file:
-            log_file.write(url + "\n")
+            log_file.write(logs)
 
-        print(url)
+        print(logs)
         return url
 
     @classmethod
