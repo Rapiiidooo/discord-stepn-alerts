@@ -34,7 +34,7 @@ STEPN_PASSWORD = "password"
 
 RULES = [
     {
-        "title": "Any shoes under 2 sol",
+        "title": "Any shoes under 2 $GMT",
         "conditions": f"%sellPrice < 2000000",
         "params": {
             "order": mapping_order["lowest_price"],

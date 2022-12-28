@@ -2,12 +2,12 @@ import json
 
 import secrets
 from stepn import StepnRequest, url_pics, mapping_chain_reversed, StepnNotFound, \
-    safe_evolution, safe_add_percent, safe_minus_percent
+    safe_evolution, safe_add_percent, safe_minus_percent, mapping_currency
 from stepn_discord import StepnClient
 
-ID = secrets.DISCORD_BOT_ID
-TOKEN = secrets.DISCORD_BOT_TOKEN
-PUBLIC = secrets.DISCORD_BOT_PUBLIC
+DISCORD_ID = secrets.DISCORD_BOT_ID
+DISCORD_TOKEN = secrets.DISCORD_BOT_TOKEN
+DISCORD_PUBLIC = secrets.DISCORD_BOT_PUBLIC
 
 STEPN_ACCOUNT = secrets.STEPN_ACCOUNT
 STEPN_PASSWORD = secrets.STEPN_PASSWORD
@@ -59,8 +59,11 @@ def main():
                 conditions = stepn.replace_binded_vars(conditions=conditions, row=row)
 
                 sell_price = row.get('sellPrice')
+
                 if eval(conditions):
                     price_evolution = safe_evolution(row.get('sellPrice'), price, default=0)
+
+                    print(price_evolution, threshold)
 
                     if (price_evolution and threshold and abs(price_evolution) > threshold) or not price:
                         image = f"{url_pics}/{row.get('img')}" if image_enabled else None
@@ -68,7 +71,7 @@ def main():
 
                         if price:
                             message += f"\n{price_evolution}% from previous price, new price limit: "
-                            message += f"{sell_price} {chain} (+/- {threshold}%) ({safe_add_percent(sell_price, threshold)}/{safe_minus_percent(sell_price, threshold)} {chain})"
+                            message += f"{sell_price} ${mapping_currency[chain]} (+{safe_add_percent(sell_price, threshold)} ${mapping_currency[chain]}/-{safe_minus_percent(sell_price, threshold)} {mapping_currency[chain]}) ({threshold}%)"
                             with open(secrets.RATIO_FILENAME, 'w') as f:
                                 new_price = {
                                     "price": row.get('sellPrice'),
@@ -118,10 +121,10 @@ def main():
                 if nb_matched >= limit or stop:
                     page = item["page_end"] + 1
                     break
-
+    return
     if messages_dict["messages"]:
         client = StepnClient(messages_dict=messages_dict)
-        client.run(TOKEN)
+        client.run(DISCORD_TOKEN)
 
 
 if __name__ == '__main__':

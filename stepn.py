@@ -29,6 +29,12 @@ mapping_chain = {
     "eth": 101,
 }
 
+mapping_currency = {
+    "sol": "GMT",
+    "bnb": "BNB",
+    "eth": "ETH",
+}
+
 mapping_type = {
     "sneakers_all": 600,
     "sneakers_walker": 601,
@@ -122,6 +128,7 @@ def http_stepn_watcher(function):
                 case 0:
                     return response_json
                 case 102001:
+                    print(response, response_json)
                     print("NotAuthorized")
                     raise StepnNotAuthorized()
                 case 212017:
@@ -190,7 +197,7 @@ class StepnRequest(object):
     def get_login(self, ):
         encoded_password = stepn_password.hash_password(self.__email, self.__password)
 
-        google_2auth_code = pyotp.TOTP(self.__google_2auth_secret).now()
+        google_2auth_code = pyotp.TOTP(self.__google_2auth_secret).at(datetime.now())
 
         url = self.creates_url_params(
             endpoint='login',
@@ -326,12 +333,12 @@ class StepnRequest(object):
     @staticmethod
     def reduce_item(details: dict):
         if 'sellPrice' in details:
-            details['sellPrice'] = int(details['sellPrice']) / 1000000
+            details['sellPrice'] = int(details['sellPrice']) / 100
         return details
 
     @staticmethod
     def human_readable_stats(title: str, chain: str, details: dict):
         url = f"{url_front}/order/{details.get('id')}"
-        message = f"{title} => details: {details.get('sellPrice')} {chain} - lvl {details.get('level')} - " \
+        message = f"{title} => {details.get('sellPrice')} ${mapping_currency[chain]} - lvl {details.get('level')} - " \
                   f"{mapping_quality_reversed[details.get('quality')]} - {details.get('mint')} mint"
-        return f"{message}\nLink: {url}\n"
+        return f"{message}\n{url}\n"
