@@ -121,7 +121,7 @@ def main():
                 if nb_matched >= limit or stop:
                     page = item["page_end"] + 1
                     break
-    return
+    
     if messages_dict["messages"]:
         client = StepnClient(messages_dict=messages_dict)
         client.run(DISCORD_TOKEN)
