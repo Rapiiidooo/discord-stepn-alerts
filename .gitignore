@@ -139,3 +139,4 @@ secrets.py
 /Cargo.lock
 
 cookies
+/rules.json
